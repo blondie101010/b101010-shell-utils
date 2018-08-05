@@ -19,4 +19,4 @@ You can simply use the following commands to install it from the command line:
 
 This package is currently in testing phase and is not ready for production yet!
 
-That said, so far it work well on most CentOS, Gentoo, and Ubuntu systems tested.
+That said, so far it works well on most CentOS, Gentoo, and Ubuntu systems tested.
