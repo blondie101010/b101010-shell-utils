@@ -80,9 +80,9 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 # Detect what to use (rc-service, service, systemctl, etc) to control this system's services.
 # We set 3 variables: INIT_DIR, INIT_SYSTEM, and INIT_ENABLE.
 initDetect() {
-        type rc-service > /dev/null 2>&1
-
         INIT_DIR=/etc/init.d
+
+        type rc-service > /dev/null 2>&1
 
         if [[ $? == 0 ]]; then
                 INIT_SYSTEM=openrc
