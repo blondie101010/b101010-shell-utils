@@ -44,8 +44,8 @@ checkRet() {    # $1:$?, $2:operation ('W'arn/'E'rror)
 
         if [[ $1 != 0 ]]; then
                 case "$2" in
-                        [wW]) warn $message;;
-                        [eE]) error $message;;
+                        [wW]) warn "$message";;
+                        [eE]) error "$message";;
                         *) error "Invalid operation passed to checkRet(): '$2'."
                 esac
         fi
