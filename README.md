@@ -8,12 +8,9 @@ These are meant to simplify recurring shell scripting tasks and to normalize ser
 
 It is strongly suggested to place these files in `/usr/local/lib` so that any script that uses them as dependencies can rely on their consistent position.
 
-You can simply use the following commands to install it from the command line:
+A simple way to install it in a single command is:
 
-    wget https://github.com/blondie101010/b101010-shell-utils/archive/master.tar.gz
-    tar -xzf master.tar.gz
-    cp b101010-shell-utils-master/b101010* /usr/local/lib/.
-    rm -rf b101010-shell-utils-master master.tar.gz
+    bash <(curl -L -Ss https://raw.githubusercontent.com/blondie101010/b101010-shell-utils/master/install.sh)
 
 ## Status
 
