@@ -12,87 +12,6 @@ fi
 
 b101010_system=1
 
-# Run the system's init service controller.
-serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install]
-	# make a translation table for exceptions
-	case "$2" in
-		sshd)
-			if [[ "$OS_NAME" = "Ubuntu" ]]; then
-				_unit=ssh
-			else
-				_unit="$2"
-			fi
-		;;
-
-		*)
-		_unit="$2"
-		;;
-	esac
-
-	if [[ "$INIT_SYSTEM" = "" ]]; then
-		initDetect
-	fi
-
-	case "$1" in
-		start|stop|restart)
-			case "$INIT_SYSTEM" in
-				"openrc")
-					rc-service $_unit $1
-				;;
-
-				"systemd")
-					systemctl $1 $_unit
-				;;
-
-				"sysv")
-					/etc/init.d/$_unit $1
-				;;
-
-				"sysv-service")
-					service $_unit $1
-				;;
-			esac
-		;;
-
-		install)
-			TARGET_NAME=$INIT_DIR/$_unit
-
-			if [[ "$INIT_SYSTEM" = "systemd" ]]; then
-				TARGET_NAME="$TARGET_NAME.service"
-			fi
-
-			cp $3 $TARGET_NAME
-		;;
-
-		enable)
-			case "$INIT_ENABLE" in
-				rc-update)
-					rc-update add $_unit
-				;;
-
-				systemd)
-					systemctl enable $_unit
-				;;
-
-				chkconfig)
-					chkconfig $_unit on
-				;;
-
-				update-rc.d)
-					update-rc.d $_unit defaults
-				;;
-
-				ln)
-					ln -s /etc/init.d/$_unit /etc/defaults/.
-				;;
-			esac
-		;;
-
-		*) error "Invalid service operation ($1)."
-		;;
-	esac
-}
-
 # Detect OS and version (if applicable).  
 # It currently can identify over a dozen of operating systems and distros.
 #
@@ -202,3 +121,85 @@ initDetect() {
 
 	return
 }
+
+# Run the system's init service controller.
+serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install]
+	# make a translation table for exceptions
+	case "$2" in
+		sshd)
+			if [[ "$OS_NAME" = "Ubuntu" ]]; then
+				_unit=ssh
+			else
+				_unit="$2"
+			fi
+		;;
+
+		*)
+		_unit="$2"
+		;;
+	esac
+
+	if [[ "$INIT_SYSTEM" = "" ]]; then
+		initDetect
+	fi
+
+	case "$1" in
+		start|stop|restart)
+			case "$INIT_SYSTEM" in
+				"openrc")
+					rc-service $_unit $1
+				;;
+
+				"systemd")
+					systemctl $1 $_unit
+				;;
+
+				"sysv")
+					/etc/init.d/$_unit $1
+				;;
+
+				"sysv-service")
+					service $_unit $1
+				;;
+			esac
+		;;
+
+		install)
+			TARGET_NAME=$INIT_DIR/$_unit
+
+			if [[ "$INIT_SYSTEM" = "systemd" ]]; then
+				TARGET_NAME="$TARGET_NAME.service"
+			fi
+
+			cp $3 $TARGET_NAME
+		;;
+
+		enable)
+			case "$INIT_ENABLE" in
+				rc-update)
+					rc-update add $_unit
+				;;
+
+				systemd)
+					systemctl enable $_unit
+				;;
+
+				chkconfig)
+					chkconfig $_unit on
+				;;
+
+				update-rc.d)
+					update-rc.d $_unit defaults
+				;;
+
+				ln)
+					ln -s /etc/init.d/$_unit /etc/defaults/.
+				;;
+			esac
+		;;
+
+		*) error "Invalid service operation ($1)."
+		;;
+	esac
+}
+
