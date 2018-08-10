@@ -17,6 +17,10 @@ b101010_system=1
 #
 # We set 2 variables: OS_NAME and OS_VER
 osDetect() {
+	if [[ $B101010_DEBUG = 1 ]]; then
+		echo "in osDetect()"
+	fi
+
 	# note that the OS_VER is not populated for most systems as of yet
 	export OS_VER=""
 
@@ -124,8 +128,14 @@ initDetect() {
 
 # Run the system's init service controller.
 serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install]
+	if [[ "$INIT_SYSTEM" = "" ]]; then
+		initDetect
+	fi
+
 	if [[ $B101010_DEBUG = 1 ]]; then
 		echo "serviceControl called as: serviceControl $*"
+		echo "OS_NAME: $OS_NAME"
+		echo "INIT_SYSTEM": $INIT_SYSTEM""
 	fi
 
 
@@ -143,10 +153,6 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 		_unit="$2"
 		;;
 	esac
-
-	if [[ "$INIT_SYSTEM" = "" ]]; then
-		initDetect
-	fi
 
 	case "$1" in
 		start|stop|restart)
