@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Blondie101010's basic shell script library system utility module.
-# This currently includes OS detection and service control.
+# This currently includes OS detection, service control, and basic installer.
 
 source /usr/local/lib/b101010.inc.sh
 
@@ -124,6 +124,11 @@ initDetect() {
 
 # Run the system's init service controller.
 serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install]
+	if [[ $B101010_DEBUG = 1 ]]; then
+		echo "serviceControl called as: serviceControl $*"
+	fi
+
+
 	# make a translation table for exceptions
 	case "$2" in
 		sshd)
@@ -202,4 +207,33 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 		;;
 	esac
 }
+
+# System agnostic installer.
+install() { # $1:package
+	if [[ "$INIT_SYSTEM" = "" ]]; then
+		initDetect
+	fi
+
+	_package=$1
+
+	case "$OS_NAME" in
+		Ubuntu)
+			apt-get -y install $_package
+		;;
+
+		CentOS)
+			yum -y install $_package
+		;;
+
+		Gentoo)
+			emerge $_package
+		;;
+
+		*)
+			error "$OS_NAME is not yet supported by b101010 install()."
+		;;
+	esac
+}
+
+
 
