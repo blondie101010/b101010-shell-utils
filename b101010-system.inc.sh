@@ -81,7 +81,13 @@ osDetect() {
 # Detect what to use (rc-service, service, systemctl, etc) to control this system's services.
 # We set 3 variables: INIT_DIR, INIT_SYSTEM, and INIT_ENABLE.  Note that we also call osDetect().
 initDetect() {
-	osDetect
+	if [[ "$OS_NAME" = "" ]]; then
+		osDetect
+	fi
+
+	if [[ "$INIT_SYSTEM" != "" ]]; then
+		return
+	fi
 
 	INIT_DIR=/etc/init.d
 
@@ -128,9 +134,7 @@ initDetect() {
 
 # Run the system's init service controller.
 serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install]
-	if [[ "$INIT_SYSTEM" = "" ]]; then
-		initDetect
-	fi
+	initDetect
 
 	if [[ $B101010_DEBUG = 1 ]]; then
 		echo "serviceControl called as: serviceControl $*"
@@ -216,9 +220,7 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 
 # System agnostic installer.
 install() { # $1:package
-	if [[ "$INIT_SYSTEM" = "" ]]; then
-		initDetect
-	fi
+	initDetect
 
 	_package=$1
 
