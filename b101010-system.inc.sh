@@ -14,6 +14,21 @@ b101010_system=1
 
 # Run the system's init service controller.
 serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install]
+	# make a translation table for exceptions
+	case "$2" in
+		sshd)
+			if [[ "$OS_NAME" = "Ubuntu" ]]; then
+				_unit=ssh
+			else
+				_unit="$2"
+			fi
+		;;
+
+		*)
+		_unit="$2"
+		;;
+	esac
+
 	if [[ "$INIT_SYSTEM" = "" ]]; then
 		initDetect
 	fi
@@ -22,25 +37,25 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 		start|stop|restart)
 			case "$INIT_SYSTEM" in
 				"openrc")
-					rc-service $2 $1
+					rc-service $_unit $1
 				;;
 
 				"systemd")
-					systemctl $1 $2
+					systemctl $1 $_unit
 				;;
 
 				"sysv")
-					/etc/init.d/$2 $1
+					/etc/init.d/$_unit $1
 				;;
 
 				"sysv-service")
-					service $2 $1
+					service $_unit $1
 				;;
 			esac
 		;;
 
 		install)
-			TARGET_NAME=$INIT_DIR/$2
+			TARGET_NAME=$INIT_DIR/$_unit
 
 			if [[ "$INIT_SYSTEM" = "systemd" ]]; then
 				TARGET_NAME="$TARGET_NAME.service"
@@ -52,23 +67,23 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 		enable)
 			case "$INIT_ENABLE" in
 				rc-update)
-					rc-update add $2
+					rc-update add $_unit
 				;;
 
 				systemd)
-					systemctl enable $2
+					systemctl enable $_unit
 				;;
 
 				chkconfig)
-					chkconfig $2 on
+					chkconfig $_unit on
 				;;
 
 				update-rc.d)
-					update-rc.d $2 defaults
+					update-rc.d $_unit defaults
 				;;
 
 				ln)
-					ln -s /etc/init.d/$2 /etc/defaults/.
+					ln -s /etc/init.d/$_unit /etc/defaults/.
 				;;
 			esac
 		;;
@@ -124,12 +139,6 @@ osDetect() {
 		fi
 
 		export OS_VER=$(grep VERSION_ID /etc/os-release | sed 's/^.*"\(.*\)"/\1/')
-	else
-		if [[ "$OS_NAME" = "" ]]; then
-			export OS_NAME=$(uname -s)
-		fi
-
-		export OS_VER=$(uname -r)
 	elif [[ -f /etc/debian_release ]] || [[ -f /etc/debian_version ]]; then
 		# put here as it is a more generic detection and is found on many Debian children (less clear)
 		if [[ "$OS_NAME" = "" ]]; then
@@ -137,6 +146,12 @@ osDetect() {
 		fi
 
 		export OS_VER=$(cat /etc/debian_version)
+	else
+		if [[ "$OS_NAME" = "" ]]; then
+			export OS_NAME=$(uname -s)
+		fi
+
+		export OS_VER=$(uname -r)
 	fi
 }
 
