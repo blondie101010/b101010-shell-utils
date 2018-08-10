@@ -1,15 +1,16 @@
 #!/bin/bash
 
-# Blondie101010's basic shell script library system service utility module.
-
-if [[ $b101010_service > 0 ]]; then     # script already included
-	return 0
-fi
+# Blondie101010's basic shell script library system utility module.
+# This currently includes OS detection and service control.
 
 source /usr/local/lib/b101010.inc.sh
 
-# define version which is also used to know if the script was already included
-b101010_service=1
+# avoid reincluding it for nothing
+if [[ $b101010_system = 1 ]]; then     # script already included
+	return 0
+fi
+
+b101010_system=1
 
 # Run the system's init service controller.
 serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install]
@@ -77,7 +78,9 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 	esac
 }
 
-# Detect OS and version (if applicable)
+# Detect OS and version (if applicable).  
+# It currently can identify over a dozen of operating systems and distros.
+#
 # We set 2 variables: OS_NAME and OS_VER
 osDetect() {
 	# note that the OS_VER is not populated for most systems as of yet
@@ -94,8 +97,6 @@ osDetect() {
 		export OS_NAME="Fedora"
 	elif [[ -f /etc/slackware-release ]]; then
 		export OS_NAME="Slackware"
-	elif [[ -f /etc/debian_release ]] || [[ -f /etc/debian_version ]]; then
-		export OS_NAME="Debian"
 	elif [[ -f /etc/mandrake-release ]]; then
 		export OS_NAME="Mandrake"
 	elif [[ -f /etc/yellowdog-release ]]; then
@@ -129,6 +130,13 @@ osDetect() {
 		fi
 
 		export OS_VER=$(uname -r)
+	elif [[ -f /etc/debian_release ]] || [[ -f /etc/debian_version ]]; then
+		# put here as it is a more generic detection and is found on many Debian children (less clear)
+		if [[ "$OS_NAME" = "" ]]; then
+			export OS_NAME="Debian"
+		fi
+
+		export OS_VER=$(cat /etc/debian_version)
 	fi
 }
 

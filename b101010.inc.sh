@@ -3,12 +3,11 @@
 # Blondie101010's basic shell script library.
 # It will be done progressively based on other open source project requirements.
 
-if [[ $b101010 > 0 ]]; then     # script already included
+# avoid reincluding it for nothing
+if [[ $b101010 = 1 ]]; then     # script already included
 	return 0
 fi
 
-
-# define version which is also used to know if the script was already included
 b101010=1
 
 # Show a warning.
