@@ -12,8 +12,8 @@ A simple and the only supported way to install it is with the following command:
 
 ## Status
 
-This package is now considered in beta testing phase, but should still not be used for production yet until further testing is done!
+This package is in beta testing phase, so it should still be used with caution.
 
-Basic shell functions and service control have been fairly well tested on Gentoo, CentOS 6 & 7, and Ubuntu 14.04 so far.
+Basic shell functions and service control have been fairly well tested on Gentoo, CentOS 6 & 7, Debian 7 & 8, Fedora 25, and Ubuntu 14.04 & 16.04 so far.
 
 System agnostic installer is a long term development option that will evolve as packages are added based on other project requirements.
