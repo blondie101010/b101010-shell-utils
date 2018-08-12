@@ -146,7 +146,7 @@ serviceControl() {      # $1:operation, $2:unit, [$3:source filename for install
 	# make a translation table for exceptions
 	case "$2" in
 		sshd)
-			if [[ "$OS_NAME" = "Ubuntu" ]]; then
+			if [[ "$OS_NAME" = "Ubuntu" ]] || [[ "$OS_NAME" = "debian" ]]; then
 				_unit=ssh
 			else
 				_unit="$2"
